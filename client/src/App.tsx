@@ -69,7 +69,7 @@ function App() {
             <div className="bg-blue-600 p-2 rounded-lg">
               <QrCode className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900 tracking-tight">QR Master</span>
+            <span className="text-xl font-bold text-gray-900 tracking-tight">Nexus QR</span>
           </div>
           
           <div className="flex items-center gap-4">
@@ -109,7 +109,7 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-500 text-sm">
-              © {new Date().getFullYear()} QR Master. Open source project.
+              © {new Date().getFullYear()} Nexus QR. Open source project.
             </p>
             <div className="flex gap-6">
               <a href="#" className="text-gray-400 hover:text-gray-600 text-sm">Privacy Policy</a>
