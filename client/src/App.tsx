@@ -3,7 +3,7 @@ import { QRCodeGenerator } from './components/QRCodeGenerator'
 import { Login } from './components/Login'
 import { QrCode, Github, LogOut } from 'lucide-react'
 import { auth, db } from './firebase'
-import { onAuthStateChanged, signOut, User } from 'firebase/auth'
+import { onAuthStateChanged, signOut, type User } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
 
 function App() {
