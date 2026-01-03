@@ -1,7 +1,65 @@
+import { useState, useEffect } from 'react'
 import { QRCodeGenerator } from './components/QRCodeGenerator'
-import { QrCode, Github } from 'lucide-react'
+import { Login } from './components/Login'
+import { QrCode, Github, LogOut } from 'lucide-react'
+import { auth, db } from './firebase'
+import { onAuthStateChanged, signOut, User } from 'firebase/auth'
+import { doc, getDoc } from 'firebase/firestore'
 
 function App() {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser && currentUser.email) {
+        try {
+          // Check if user exists in the 'allowed_users' collection
+          // We use the email as the document ID for easy lookup
+          const userDocRef = doc(db, 'allowed_users', currentUser.email);
+          const userDoc = await getDoc(userDocRef);
+
+          if (userDoc.exists()) {
+            setUser(currentUser);
+            setAuthError(undefined);
+          } else {
+            // User is authenticated but not authorized
+            await signOut(auth);
+            setAuthError(`Access denied. The email ${currentUser.email} is not authorized.`);
+            setUser(null);
+          }
+        } catch (error) {
+          console.error("Error checking user permission:", error);
+          setAuthError("Error verifying permissions. Please try again.");
+          await signOut(auth);
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleSignOut = () => {
+    signOut(auth);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Login error={authError} />;
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Header */}
@@ -13,16 +71,31 @@ function App() {
             </div>
             <span className="text-xl font-bold text-gray-900 tracking-tight">QR Master</span>
           </div>
-          <a 
-            href="https://github.com/rvasanthan/qr-code-generator" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-gray-500 hover:text-gray-900 transition-colors"
-          >
-            <Github className="w-6 h-6" />
-          </a>
+          
+          <div className="flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-2 text-sm text-gray-600 bg-gray-100 px-3 py-1.5 rounded-full">
+              <img src={user.photoURL || ''} alt="Profile" className="w-5 h-5 rounded-full" />
+              <span>{user.email}</span>
+            </div>
+            <button 
+              onClick={handleSignOut}
+              className="p-2 text-gray-500 hover:text-red-600 transition-colors"
+              title="Sign Out"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
+            <a 
+              href="https://github.com/rvasanthan/qr-code-generator" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-gray-500 hover:text-gray-900 transition-colors"
+            >
+              <Github className="w-6 h-6" />
+            </a>
+          </div>
         </div>
       </header>
+
 
       {/* Main Content */}
       <main className="flex-grow container mx-auto px-4 py-12 sm:px-6 lg:px-8">
