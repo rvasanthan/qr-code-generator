@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { QRCodeGenerator } from './components/QRCodeGenerator'
 import { Login } from './components/Login'
-import { QrCode, Github, LogOut } from 'lucide-react'
+import { QrCode, LogOut } from 'lucide-react'
 import { auth, db } from './firebase'
 import { onAuthStateChanged, signOut, type User } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
@@ -84,14 +84,6 @@ function App() {
             >
               <LogOut className="w-5 h-5" />
             </button>
-            <a 
-              href="https://github.com/rvasanthan/qr-code-generator" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-gray-500 hover:text-gray-900 transition-colors"
-            >
-              <Github className="w-6 h-6" />
-            </a>
           </div>
         </div>
       </header>
